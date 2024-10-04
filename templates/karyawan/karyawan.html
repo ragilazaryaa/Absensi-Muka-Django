@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Upload Karyawan - Green Health</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css">
+    <style>
+        :root {
+            --primary-color: #4CAF50;
+            --primary-light: #81C784;
+            --primary-dark: #388E3C;
+            --accent-color: #00BFA5;
+            --background-light: #E8F5E9;
+            --text-color: #1B5E20;
+            --text-light: #33691E;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, var(--primary-light) 0%, var(--primary-color) 100%);
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            transition: background 0.5s ease;
+        }
+
+        .container {
+            background-color: rgba(255, 255, 255, 0.95);
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            max-width: 500px;
+            width: 100%;
+            animation: fadeIn 0.5s ease-out;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .container::before {
+            content: "";
+            position: absolute;
+            top: -50px;
+            left: -50px;
+            width: 100px;
+            height: 100px;
+            background: var(--primary-light);
+            border-radius: 50%;
+            opacity: 0.5;
+        }
+
+        .container::after {
+            content: "";
+            position: absolute;
+            bottom: -50px;
+            right: -50px;
+            width: 100px;
+            height: 100px;
+            background: var(--accent-color);
+            border-radius: 50%;
+            opacity: 0.5;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        h2 {
+            text-align: center;
+            color: var(--primary-dark);
+            margin-bottom: 30px;
+            font-weight: 600;
+            position: relative;
+        }
+
+        h2::after {
+            content: "";
+            position: absolute;
+            bottom: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 50px;
+            height: 3px;
+            background: var(--primary-color);
+            border-radius: 3px;
+        }
+
+        .form-group {
+            margin-bottom: 25px;
+            position: relative;
+        }
+
+        label {
+            font-weight: 600;
+            color: var(--text-color);
+            display: block;
+            margin-bottom: 8px;
+            transition: color 0.3s ease;
+        }
+
+        input[type="text"] {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid var(--primary-light);
+            border-radius: 8px;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            background-color: var(--background-light);
+            color: var(--text-color);
+        }
+
+        input[type="text"]:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(76, 175, 80, 0.3);
+        }
+
+        #camera-container {
+            width: 100%;
+            height:auto;
+            max-width: auto;
+            margin-bottom: 20px;
+            border: 2px solid var(--primary-light);
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        #camera-feed {
+            width: 100%;
+            height: auto;
+            margin:center;
+            display: block;
+        }
+
+        #capture-photo {
+            background-color: var(--primary-color); /* Gunakan warna tombol hijau */
+            color: white;
+            margin-bottom: 15px;
+            width: 100%;
+            border: none;
+            border-radius: 8px;
+            padding: 14px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        #capture-photo:hover {
+            background-color: var(--primary-dark);
+        }
+
+        #photo-preview {
+            max-width: 100%;
+            height: auto;
+            border-radius: 8px;
+            margin:center;
+            display: none;
+            margin-top: 15px;
+            border: 2px solid var(--primary-light);
+        }
+
+        button {
+            width: 100%;
+            padding: 14px;
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        button:hover {
+            background-color: var(--primary-dark);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 10px rgba(76, 175, 80, 0.3);
+        }
+
+        button:active {
+            transform: translateY(0);
+        }
+
+        button::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 5px;
+            height: 5px;
+            background: rgba(255, 255, 255, 0.5);
+            opacity: 0;
+            border-radius: 100%;
+            transform: scale(1, 1) translate(-50%);
+            transform-origin: 50% 50%;
+        }
+
+        @keyframes ripple {
+            0% {
+                transform: scale(0, 0);
+                opacity: 1;
+            }
+            20% {
+                transform: scale(25, 25);
+                opacity: 1;
+            }
+            100% {
+                opacity: 0;
+                transform: scale(40, 40);
+            }
+        }
+
+        button:focus:not(:active)::after {
+            animation: ripple 1s ease-out;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h2>Upload Karyawan</h2>
+        <form action="{% url 'postkaryawan' %}" method="POST" enctype="multipart/form-data">
+            {% csrf_token %}
+            <div class="form-group">
+                <label for="nik">NIK</label>
+                <input type="text" name="nik" id="nik" required placeholder="Masukkan NIK">
+            </div>
+            <div class="form-group">
+                <label for="name">NAMA</label>
+                <input type="text" name="name" id="name" required placeholder="Masukkan Nama">
+            </div>
+            <div class="form-group">
+                <label for="divisi">DIVISI</label>
+                <input type="text" name="divisi" id="divisi" required placeholder="Masukkan Divisi">
+            </div>
+            <div class="form-group">
+
+                <label for="photo">FOTO</label>
+                <div id="camera-container">
+                    <video id="camera-feed" autoplay playsinline></video>
+                    <canvas id="photo-canvas" style="display:none;"></canvas>
+                </div>
+                <button type="button" id="capture-photo">Ambil Foto</button>
+                <img id="photo-preview" alt="Captured photo">
+                <input type="hidden" name="photo" id="photo-data">
+            </div>
+            <button type="submit">Upload</button>
+        </form>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
+    <script>
+        $(function () {
+            // Toastr configuration
+            toastr.options = {
+                "closeButton": true,
+                "debug": false,
+                "newestOnTop": false,
+                "progressBar": true,
+                "positionClass": "toast-top-right",
+                "preventDuplicates": false,
+                "onclick": null,
+                "showDuration": "300",
+                "hideDuration": "1000",
+                "timeOut": "5000",
+                "extendedTimeOut": "1000",
+                "showEasing": "swing",
+                "hideEasing": "linear",
+                "showMethod": "fadeIn",
+                "hideMethod": "fadeOut"
+            }
+
+            // Inisialisasi Kamera
+            const cameraFeed = document.getElementById('camera-feed');
+            const photoCanvas = document.getElementById('photo-canvas');
+            const photoPreview = document.getElementById('photo-preview');
+            const captureButton = document.getElementById('capture-photo');
+            const photoDataInput = document.getElementById('photo-data');
+
+            async function initCamera() {
+                try {
+                    const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+                    cameraFeed.srcObject = stream;
+                } catch (error) {
+                    console.error('Error accessing camera:', error);
+                    toastr.error('Tidak dapat mengakses kamera. Pastikan kamera terhubung dan izin diberikan.');
+                }
+            }
+
+            initCamera();
+
+            captureButton.addEventListener('click', function() {
+                photoCanvas.width = cameraFeed.videoWidth;
+                photoCanvas.height = cameraFeed.videoHeight;
+                photoCanvas.getContext('2d').drawImage(cameraFeed, 0, 0);
+                const photoData = photoCanvas.toDataURL('image/jpeg');
+                photoPreview.src = photoData;
+                photoPreview.style.display = 'block';
+                photoDataInput.value = photoData;
+            });
+
+            // Form submission
+            $('form').on('submit', function(e) {
+                e.preventDefault();
+                var formData = new FormData(this);
+
+                $.ajax({
+                    url: $(this).attr('action'),
+                    type: 'POST',
+                    data: formData,
+                    success: function(response) {
+                        toastr.success('Data karyawan berhasil diupload!');
+                        $('form')[0].reset();
+                        photoPreview.style.display = 'none';
+                    },
+                    error: function(xhr, status, error) {
+                        toastr.error('Terjadi kesalahan saat mengupload data.');
+                    },
+                    cache: false,
+                    contentType: false,
+                    processData: false
+                });
+            });
+
+            // Add ripple effect to buttons
+            $('button').on('click', function(e) {
+                let x = e.clientX - e.target.offsetLeft;
+                let y = e.clientY - e.target.offsetTop;
+                let ripple = document.createElement('span');
+                ripple.style.left = `${x}px`;
+                ripple.style.top = `${y}px`;
+                this.appendChild(ripple);
+                setTimeout(() => {
+                    ripple.remove();
+                }, 600);
+            });
+        });
+    </script>
+</body>
+
+</html>

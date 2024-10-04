@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Absensi Kamera</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #4CAF50 0%, #36622B 100%);
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            transition: background 0.5s ease;
+        }
+
+        .container {
+            background-color: rgba(255, 255, 255, 0.9);
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            max-width: 500px;
+            width: 100%;
+            animation: fadeIn 0.5s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        h2 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 30px;
+            font-weight: 600;
+        }
+
+        .video-container {
+            position: relative;
+            width: 100%;
+            padding-bottom: 56.25%;
+            margin-bottom: 20px;
+            overflow: hidden;
+            border-radius: 15px;
+        }
+
+        video {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.3s ease;
+        }
+
+        button {
+            width: 100%;
+            padding: 14px;
+            background-color: #4CAF50;
+            color: #fff;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            margin-bottom: 15px;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        button:hover {
+            background-color: #3a7bc8;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 10px rgba(74, 144, 226, 0.3);
+        }
+
+        button:active {
+            transform: translateY(0);
+        }
+
+        .success-animation {
+            background-color: #4CAF50;
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            position: absolute;
+            left: 50%;
+            top: -150px;
+            transform: translateX(-50%);
+            animation: bounceIn 1s ease-in-out;
+        }
+
+        @keyframes bounceIn {
+            0% {
+                transform: translateX(-50%) translateY(0);
+                opacity: 0;
+            }
+            50% {
+                transform: translateX(-50%) translateY(-20px);
+                opacity: 0.5;
+            }
+            100% {
+                transform: translateX(-50%) translateY(0);
+                opacity: 1;
+            }
+        }
+
+        .hidden-input {
+            display: none;
+        }
+    </style>
+</head>
+
+<body onload="startCamera()">
+    <div class="container">
+        <h2>Absensi dengan Face Recognition</h2>
+        <form id="absenForm" method="POST" enctype="multipart/form-data" action="{% url 'face_recognition_absen' %}">
+            {% csrf_token %}
+            <div class="video-container">
+                <video autoplay></video>
+            </div>
+
+            <button type="button" onclick="capturePhoto()" id="captureBtn">Capture Photo</button>
+
+            <!-- Hidden input for the captured photo in base64 format -->
+            <input type="hidden" name="photo" id="photoInput">
+            <button type="submit">Absen</button>
+        </form>
+        <div id="resultDisplay" style="display:none;">
+            <h3>Hasil Absensi:</h3>
+            <p id="nikResult"></p>
+            <p id="nameResult"></p>
+
+        </div>
+        <div id="successAnimation" class="success-animation" style="display: none;"></div>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
+    <script>
+        function startCamera() {
+            navigator.mediaDevices.getUserMedia({ video: true })
+                .then(stream => {
+                    const video = document.querySelector('video');
+                    video.srcObject = stream;
+                });
+        }
+
+        function capturePhoto() {
+            const video = document.querySelector('video');
+            const canvas = document.createElement('canvas');
+            canvas.width = video.videoWidth;
+            canvas.height = video.videoHeight;
+            const context = canvas.getContext('2d');
+            context.drawImage(video, 0, 0, canvas.width, canvas.height);
+
+            // Convert canvas ke base64 string
+            const photo = canvas.toDataURL('image/jpeg');
+            
+            document.getElementById('photoInput').value = photo;
+
+            toastr.success('Berhasil mengambil foto!');
+        }
+
+        $(document).ready(function() {
+            $('#absenForm').on('submit', function(e) {
+                e.preventDefault();
+                
+                var formData = new FormData(this);
+
+                $.ajax({
+                    url: "{% url 'face_recognition_absen' %}",
+                    type: 'POST',
+                    data: formData,
+                    processData: false,
+                    contentType: false,
+                    success: function(response) {
+                        if (response.status === 'success') {
+                            toastr.success(response.message);
+                            $('#nikResult').text('NIK: ' + response.nik);
+                            $('#nameResult').text('Nama: ' + response.name);
+                            
+                            // Tampilkan result dan animasi
+                            $('#resultDisplay').fadeIn(500);
+                            $('#successAnimation').show();
+                        } else {
+                            toastr.error(response.message);
+                        }
+                    },
+                    error: function() {
+                        toastr.error('Terjadi kesalahan saat mengirim data.');
+                    }
+                });
+            });
+        });
+    </script>
+    
+</body>
+
+</html>

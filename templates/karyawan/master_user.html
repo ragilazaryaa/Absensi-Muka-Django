@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Master Karyawan</title>
+    <style>
+        :root {
+            --primary-color: #4CAF50;
+            --primary-light: #81C784;
+            --primary-dark: #388E3C;
+            --accent-color: #00BFA5;
+            --background-light: #E8F5E9;
+            --text-color: #1B5E20;
+            --text-light: #33691E;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, var(--primary-light) 0%, var(--primary-color) 100%);
+            color: var(--text-color);
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .container {
+            width: 80%;
+            margin: 50px auto;
+            padding: 40px;
+            background-color: rgba(255, 255, 255, 0.95);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            border-radius: 20px;
+            position: relative;
+        }
+
+        h1, h2 {
+            text-align: center;
+            color: var(--primary-dark);
+            margin-bottom: 30px;
+            font-weight: 600;
+        }
+
+        h2::after {
+            content: "";
+            position: absolute;
+            bottom: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 50px;
+            height: 3px;
+            background: var(--primary-color);
+            border-radius: 3px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        table, th, td {
+            border: 1px solid var(--primary-light);
+            padding: 12px;
+            text-align: left;
+        }
+
+        th {
+            background-color: var(--primary-color);
+            color: white;
+        }
+
+        td {
+            background-color: var(--background-light);
+        }
+
+        img {
+            max-width: 80px;
+            height: auto;
+            border-radius: 4px;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            color: white;
+            border: none;
+            cursor: pointer;
+            text-decoration: none;
+            border-radius: 8px;
+            margin: 0 4px;
+            display: inline-block;
+            font-weight: 600;
+        }
+
+        .btn-edit {
+            background-color: #FFA500;
+        }
+
+        .btn-delete {
+            background-color: #FF0000;
+        }
+
+        .btn-add {
+            background-color: var(--accent-color);
+            font-size: 16px;
+            margin-bottom: 20px;
+            display: inline-block;
+            text-align: center;
+        }
+
+        .btn:hover {
+            opacity: 0.8;
+        }
+
+        .no-data {
+            text-align: center;
+            color: var(--text-light);
+            font-style: italic;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                width: 95%;
+            }
+            table {
+                font-size: 14px;
+            }
+            img {
+                max-width: 60px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>Master Karyawan</h1>
+
+   
+
+    <!-- Tabel -->
+    <h2>Daftar Karyawan</h2>
+    <a href="{% url 'karyawan' %}" class="btn btn-add">Tambah Karyawan Baru</a>
+    <table>
+        <thead>
+            <tr>
+                <th>NIK</th>
+                <th>Nama</th>
+                <th>Divisi</th>
+                <th>Foto</th>
+                <th>Aksi</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for karyawan in karyawan_list %}
+            <tr>
+                <td>{{ karyawan.nik }}</td>
+                <td>{{ karyawan.name }}</td>
+                <td>{{ karyawan.divisi }}</td>
+                <td><img src="{{ karyawan.photo.url }}" alt="Foto Karyawan"></td>
+                <td>
+                    <a href="{% url 'update_karyawan' karyawan.nik %}" class="btn btn-edit">Edit</a>
+                    <a href="{% url 'delete_karyawan' karyawan.nik %}" class="btn btn-delete" onclick="return confirm('Yakin ingin menghapus?')">Delete</a>
+                </td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="5" class="no-data">Belum ada data karyawan.</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+</body>
+</html>
