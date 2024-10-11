@@ -103,6 +103,10 @@
             background-color: #FF0000;
         }
 
+        .btn-list {
+            background-color: #008CBA;
+        }
+
         .btn-add {
             background-color: var(--accent-color);
             font-size: 16px;
@@ -139,8 +143,6 @@
 <div class="container">
     <h1>Master Karyawan</h1>
 
-   
-
     <!-- Tabel -->
     <h2>Daftar Karyawan</h2>
     <a href="{% url 'karyawan' %}" class="btn btn-add">Tambah Karyawan Baru</a>
@@ -152,6 +154,7 @@
                 <th>Divisi</th>
                 <th>Foto</th>
                 <th>Aksi</th>
+                <th>List Absensi</th>
             </tr>
         </thead>
         <tbody>
@@ -162,13 +165,16 @@
                 <td>{{ karyawan.divisi }}</td>
                 <td><img src="{{ karyawan.photo.url }}" alt="Foto Karyawan"></td>
                 <td>
-                    <a href="{% url 'update_karyawan' karyawan.nik %}" class="btn btn-edit">Edit</a>
                     <a href="{% url 'delete_karyawan' karyawan.nik %}" class="btn btn-delete" onclick="return confirm('Yakin ingin menghapus?')">Delete</a>
                 </td>
+                <td>
+                    <a href="{% url 'list_absen' karyawan.nik %}" class="btn btn-list">List Absensi</a>
+                </td>
+                
             </tr>
             {% empty %}
             <tr>
-                <td colspan="5" class="no-data">Belum ada data karyawan.</td>
+                <td colspan="6" class="no-data">Belum ada data karyawan.</td>
             </tr>
             {% endfor %}
         </tbody>

@@ -121,7 +121,7 @@
 
         #camera-container {
             width: 100%;
-            height:auto;
+            height: auto;
             max-width: auto;
             margin-bottom: 20px;
             border: 2px solid var(--primary-light);
@@ -132,12 +132,12 @@
         #camera-feed {
             width: 100%;
             height: auto;
-            margin:center;
+            margin: center;
             display: block;
         }
 
         #capture-photo {
-            background-color: var(--primary-color); /* Gunakan warna tombol hijau */
+            background-color: var(--primary-color);
             color: white;
             margin-bottom: 15px;
             width: 100%;
@@ -149,22 +149,31 @@
             cursor: pointer;
             transition: all 0.3s ease;
         }
+
         #capture-photo:hover {
             background-color: var(--primary-dark);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 10px rgba(76, 175, 80, 0.3);
         }
 
         #photo-preview {
             max-width: 100%;
             height: auto;
             border-radius: 8px;
-            margin:center;
+            margin: center;
             display: none;
             margin-top: 15px;
             border: 2px solid var(--primary-light);
         }
 
-        button {
-            width: 100%;
+        .button-container {
+            display: flex;
+            justify-content: space-between;
+            gap: 15px;
+        }
+
+        .button {
+            flex: 1;
             padding: 14px;
             background-color: var(--primary-color);
             color: white;
@@ -178,17 +187,17 @@
             overflow: hidden;
         }
 
-        button:hover {
+        .button:hover {
             background-color: var(--primary-dark);
             transform: translateY(-2px);
             box-shadow: 0 4px 10px rgba(76, 175, 80, 0.3);
         }
 
-        button:active {
+        .button:active {
             transform: translateY(0);
         }
 
-        button::after {
+        .button::after {
             content: '';
             position: absolute;
             top: 50%;
@@ -217,7 +226,7 @@
             }
         }
 
-        button:focus:not(:active)::after {
+        .button:focus:not(:active)::after {
             animation: ripple 1s ease-out;
         }
     </style>
@@ -241,7 +250,6 @@
                 <input type="text" name="divisi" id="divisi" required placeholder="Masukkan Divisi">
             </div>
             <div class="form-group">
-
                 <label for="photo">FOTO</label>
                 <div id="camera-container">
                     <video id="camera-feed" autoplay playsinline></video>
@@ -251,7 +259,10 @@
                 <img id="photo-preview" alt="Captured photo">
                 <input type="hidden" name="photo" id="photo-data">
             </div>
-            <button type="submit">Upload</button>
+            <div class="button-container">
+                <button type="submit" class="button">Upload</button>
+                <button type="button" class="button" onclick="window.location.href='{% url 'face_recognition_absen' %}'">Absensi</button>
+            </div>
         </form>
     </div>
 
@@ -331,7 +342,7 @@
             });
 
             // Add ripple effect to buttons
-            $('button').on('click', function(e) {
+            $('.button').on('click', function(e) {
                 let x = e.clientX - e.target.offsetLeft;
                 let y = e.clientY - e.target.offsetTop;
                 let ripple = document.createElement('span');

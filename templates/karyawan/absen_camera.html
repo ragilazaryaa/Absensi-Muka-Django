@@ -30,8 +30,15 @@
         }
 
         @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(-20px); }
-            to { opacity: 1; transform: translateY(0); }
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
 
         h2 {
@@ -60,7 +67,8 @@
             transition: transform 0.3s ease;
         }
 
-        button {
+        button,
+        .secondary-button {
             width: 100%;
             padding: 14px;
             background-color: #4CAF50;
@@ -72,49 +80,31 @@
             cursor: pointer;
             margin-bottom: 15px;
             transition: all 0.3s ease;
-            position: relative;
-            overflow: hidden;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
         }
 
-        button:hover {
+        button:hover,
+        .secondary-button:hover {
             background-color: #3a7bc8;
             transform: translateY(-2px);
             box-shadow: 0 4px 10px rgba(74, 144, 226, 0.3);
         }
 
-        button:active {
+        button:active,
+        .secondary-button:active {
             transform: translateY(0);
-        }
-
-        .success-animation {
-            background-color: #4CAF50;
-            width: 100px;
-            height: 100px;
-            border-radius: 50%;
-            position: absolute;
-            left: 50%;
-            top: -150px;
-            transform: translateX(-50%);
-            animation: bounceIn 1s ease-in-out;
-        }
-
-        @keyframes bounceIn {
-            0% {
-                transform: translateX(-50%) translateY(0);
-                opacity: 0;
-            }
-            50% {
-                transform: translateX(-50%) translateY(-20px);
-                opacity: 0.5;
-            }
-            100% {
-                transform: translateX(-50%) translateY(0);
-                opacity: 1;
-            }
         }
 
         .hidden-input {
             display: none;
+        }
+
+        .button-container {
+            display: flex;
+            justify-content: space-between;
+            gap: 15px;
         }
     </style>
 </head>
@@ -132,15 +122,16 @@
 
             <!-- Hidden input for the captured photo in base64 format -->
             <input type="hidden" name="photo" id="photoInput">
-            <button type="submit">Absen</button>
+            <div class="button-container">
+                <button type="submit">Absen</button>
+                <a href="{% url 'master_user' %}" class="secondary-button">List Karyawan</a>
+            </div>
         </form>
         <div id="resultDisplay" style="display:none;">
             <h3>Hasil Absensi:</h3>
             <p id="nikResult"></p>
             <p id="nameResult"></p>
-
         </div>
-        <div id="successAnimation" class="success-animation" style="display: none;"></div>
     </div>
 
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
@@ -164,7 +155,6 @@
 
             // Convert canvas ke base64 string
             const photo = canvas.toDataURL('image/jpeg');
-            
             document.getElementById('photoInput').value = photo;
 
             toastr.success('Berhasil mengambil foto!');
@@ -173,7 +163,7 @@
         $(document).ready(function() {
             $('#absenForm').on('submit', function(e) {
                 e.preventDefault();
-                
+
                 var formData = new FormData(this);
 
                 $.ajax({
@@ -187,10 +177,7 @@
                             toastr.success(response.message);
                             $('#nikResult').text('NIK: ' + response.nik);
                             $('#nameResult').text('Nama: ' + response.name);
-                            
-                            // Tampilkan result dan animasi
                             $('#resultDisplay').fadeIn(500);
-                            $('#successAnimation').show();
                         } else {
                             toastr.error(response.message);
                         }
@@ -202,7 +189,6 @@
             });
         });
     </script>
-    
 </body>
 
 </html>

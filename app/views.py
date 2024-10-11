@@ -1,4 +1,4 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect , get_object_or_404
 from .forms import KaryawanForm
 from .models import Karyawan, Absen
 import face_recognition
@@ -11,6 +11,24 @@ from django.core.files.storage import default_storage
 
 def karyawan(request):
     return render(request, 'karyawan/karyawan.html')
+
+def clear_absensi(request):
+    if request.method == 'POST':
+        Absen.objects.all().delete()
+        messages.success(request, 'Data absensi berhasil dihapus.')
+        return redirect('list_absensi')
+
+    return redirect('list_absensi')
+
+def list_absensi(request, nik):
+    karyawan = get_object_or_404(Karyawan, nik=nik)
+    kehadiran = Absen.objects.filter(nik=nik)  # Pastikan ini sesuai dengan field di model Absen
+    
+    context = {
+        'karyawan': karyawan,  # Mengirimkan instance Karyawan
+        'kehadiran': kehadiran,
+    }
+    return render(request, 'karyawan/list_absensi.html', context)
 
 def postkaryawan(request):
     if request.method == 'POST':
