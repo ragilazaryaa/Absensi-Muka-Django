@@ -1,1 +1,1 @@
-# Absensi-Django-
+# Sistem Absensi Wajah (Python Django)
